@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Prototipo · Placas NFC para restaurantes</title>
+<!-- Prototipo de muestra. No es la web definitiva. -->
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Geist:wght@400;500;600&display=swap">
+<style>
+:root{
+  --nit:#16120F; --nit-2:#1F1915; --os:#EEE9E1; --os-2:#B9B1A6; --llauto:#C29B62; --linia:#3A322B;
+  --display:'Bodoni Moda',Georgia,serif; --text:'Geist',system-ui,sans-serif;
+  --marge:clamp(20px,4vw,56px);
+}
+*{box-sizing:border-box;margin:0}
+html{background:var(--nit);color:var(--os);font:400 17px/1.55 var(--text);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img,video{display:block}
+:focus-visible{outline:2px solid var(--llauto);outline-offset:3px}
+.capcalera{position:fixed;inset:0 0 auto;z-index:20;display:flex;align-items:center;gap:32px;padding:22px var(--marge);transition:background .3s,padding .3s}
+.capcalera.opac{background:color-mix(in srgb,var(--nit) 86%,transparent);backdrop-filter:blur(10px);padding-block:14px}
+.marca{font:500 24px/1 var(--display);margin-right:auto;text-decoration:none}
+.capcalera nav{display:flex;gap:28px;font-size:15px}
+.capcalera nav a{text-decoration:none;color:var(--os-2)}
+.boto{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 20px;background:var(--os);color:var(--nit);text-decoration:none;font:500 15px/1 var(--text);border:0;border-radius:2px;cursor:pointer}
+.boto.fi{background:transparent;color:var(--os);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--os) 45%,transparent)}
+@media (hover:hover){.capcalera nav a:hover{color:var(--os)}.boto:hover{background:#fff}.boto.fi:hover{background:color-mix(in srgb,var(--os) 10%,transparent)}}
+h2{font:400 clamp(40px,5.2vw,84px)/.98 var(--display);letter-spacing:-.02em}
+.sec{padding:clamp(96px,12vw,160px) var(--marge)}
+.cap-sec{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,24rem);gap:48px;align-items:end}
+.cap-sec p{color:var(--os-2)}
+
+/* H1 HERO */
+.escena{height:300vh;position:relative}
+.fix{position:sticky;top:0;height:100svh;overflow:hidden}
+.marc{position:absolute;inset:0;clip-path:inset(calc(var(--t,0)*16svh) calc(var(--t,0)*30vw) calc(var(--t,0)*16svh) calc(var(--t,0)*6vw) round calc(var(--t,0)*4px))}
+.marc video,.marc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.marc img{opacity:var(--f,0);object-position:56% 82%;transform:scale(calc(1.08 - .08*var(--f,0)));transform-origin:56% 82%}
+.vel{position:absolute;inset:0;background:linear-gradient(180deg,rgba(22,18,15,.55) 0%,rgba(22,18,15,0) 30%,rgba(22,18,15,0) 45%,rgba(22,18,15,.85) 100%);opacity:calc(1 - var(--t,0))}
+.hero-text{position:absolute;left:var(--marge);right:var(--marge);bottom:clamp(28px,6svh,64px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,26rem);gap:48px;align-items:end;opacity:calc(1 - var(--t,0)*2.2);transform:translateY(calc(var(--t,0)*-40px))}
+h1{font:400 clamp(52px,8.4vw,136px)/.92 var(--display);letter-spacing:-.02em}
+.hero-text p{font-size:18px;max-width:34ch}
+.accions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+.text-2{position:absolute;right:var(--marge);top:50%;width:min(24vw,340px);transform:translateY(calc(-50% + (1 - var(--g,0))*30px));opacity:var(--g,0)}
+.text-2 h2{font-size:clamp(30px,2.9vw,46px);line-height:1.04}
+.text-2 p{margin-top:16px;color:var(--os-2);font-size:16px}
+.text-2 .mida{margin-top:28px;padding-top:14px;border-top:1px solid color-mix(in srgb,var(--os) 22%,transparent);font-size:14px;color:var(--os)}
+
+/* H2 EL TOC */
+.toc{height:260vh;position:relative}
+.toc .fix{background:#0d0b09}
+.toc .fons{position:absolute;inset:0}
+.toc .fons .lamina{position:absolute}
+.toc .fons img{position:absolute;inset:0;width:100%;height:100%;filter:brightness(calc(.75 - .25*var(--m,0)))}
+.ona{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;box-shadow:0 0 0 1.5px var(--os);opacity:calc(var(--o,0) * (1 - var(--o,0)) * 3.2);transform:scale(calc(1 + var(--o,0)*22));pointer-events:none}
+.mobil{position:absolute;width:var(--mw,300px);transform:translate(calc((1 - var(--m,0))*55vw),calc((1 - var(--m,0))*45svh)) rotate(calc((1 - var(--m,0))*-10deg));will-change:transform}
+.mobil img{width:100%;height:auto}
+.pantalla{position:absolute;left:0;top:0;width:360px;height:740px;transform-origin:0 0;overflow:hidden;border-radius:34px;background:#000}
+.pantalla .pag{position:absolute;inset:0;background:#FAF8F5;color:#1a1a1a;opacity:var(--p,0);font:400 26px/1.35 var(--text);padding:120px 34px 0}
+.pag .nom{font:500 44px/1 var(--display);color:#3D111A}
+.pag .loc{margin-top:8px;color:#777}
+.pag .estrelles{margin-top:56px;display:flex;gap:14px;font-size:58px;color:#C9C3BA;letter-spacing:0}
+.pag .caixa{margin-top:40px;height:200px;border:2px solid #E2DDD6;border-radius:18px;padding:22px;color:#9a948c}
+.pag .env{margin-top:28px;height:84px;border-radius:42px;background:#3D111A;color:#fff;display:grid;place-items:center;font-weight:500}
+.toc .text{position:absolute;left:var(--marge);top:50%;transform:translateY(-50%);max-width:30rem;opacity:calc(.25 + var(--m,0)*.75)}
+.toc .text p{margin-top:20px;color:var(--os-2);max-width:34ch}
+.toc .text .fet{margin-top:28px;color:var(--os);opacity:var(--p,0);font-size:15px}
+
+/* H3 CONFIGURADOR */
+.config{background:var(--nit-2)}
+.config-grid{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:clamp(24px,3vw,48px);margin-top:56px;align-items:start}
+.eina{position:sticky;top:110px}
+.eina label{display:block;font-size:15px;color:var(--os-2);margin-bottom:10px}
+.camp{display:flex;gap:8px;flex-wrap:wrap}
+.camp input{flex:1 1 220px;min-width:0;height:52px;border:1px solid var(--linia);border-radius:2px;padding:0 16px;font:500 18px/1 var(--text);background:var(--nit);color:var(--os)}
+.camp input::placeholder{color:#7d746a}
+.camp .boto{min-height:52px;min-width:160px}
+.camp .boto[aria-busy=true]{cursor:progress;opacity:.7}
+.estat{min-height:3em;margin-top:12px;font-size:15px;color:var(--os-2)}
+.opcions{margin-top:28px;border-top:1px solid var(--linia);padding-top:20px;display:grid;gap:18px}
+.opcions fieldset{border:0;padding:0}
+.opcions legend{font-size:14px;color:var(--os-2);margin-bottom:8px}
+.xips{display:flex;gap:8px;flex-wrap:wrap}
+.xips label{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border:1px solid var(--linia);border-radius:2px;font-size:15px;cursor:pointer;color:var(--os)}
+.xips input{position:absolute;opacity:0;pointer-events:none}
+.xips input:checked + span{color:var(--nit)}
+.xips label:has(input:checked){background:var(--os);border-color:var(--os);color:var(--nit)}
+.xips label:has(input:focus-visible){outline:2px solid var(--llauto);outline-offset:2px}
+.eina .rep{margin-top:28px}
+.fotos{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:10px}
+.foto{position:relative;overflow:hidden;border-radius:2px;background:#000}
+.foto.gran{grid-column:1 / 3;aspect-ratio:16/10}
+.foto.petita{aspect-ratio:4/5}
+.lamina{position:absolute}
+.lamina > img{position:absolute;inset:0;width:100%;height:100%}
+.disseny{position:absolute;left:0;top:0;width:75px;height:125px;transform-origin:0 0;mix-blend-mode:multiply;border-radius:3.5px 3.5px 0 0;overflow:hidden}
+.disseny svg{display:block;width:75px;height:125px}
+.foto figcaption{position:absolute;left:14px;bottom:12px;font-size:13px;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+
+/* H4 GALERIA */
+.tira{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;padding:56px var(--marge) 12px;scrollbar-width:thin;scrollbar-color:#3a332c transparent}
+.tira figure{flex:0 0 min(72vw,1040px);scroll-snap-align:start}
+.tira figure:nth-child(even){flex-basis:min(48vw,700px)}
+.tira img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:2px}
+.tira figcaption{display:flex;justify-content:space-between;margin-top:14px;font-size:14px;color:var(--os-2)}
+.tira figcaption b{font-weight:500;color:var(--os)}
+
+/* H5 PRODUCTE DE PROP */
+.prop{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:12px;margin-top:56px}
+.prop figure{position:relative;overflow:hidden;border-radius:2px;background:#0d0b09}
+.prop figure.a{grid-row:1 / 3}
+.prop img{width:100%;height:100%;object-fit:cover;clip-path:inset(calc(var(--r,0)*100%) 0 0 0);transform:scale(calc(1 + var(--r,0)*.06));transition:clip-path 1.1s cubic-bezier(.2,.7,.1,1),transform 1.4s cubic-bezier(.2,.7,.1,1)}
+.prop figure.vist img{--r:0}
+.prop figure:not(.vist) img{--r:1}
+.prop figcaption{position:absolute;left:18px;bottom:16px;right:18px;font-size:14px;color:var(--os-2)}
+.prop figcaption b{display:block;color:var(--os);font-weight:500;font-size:16px}
+
+/* H6 COM TREBALLEM */
+.proces{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:clamp(24px,4vw,72px);margin-top:56px}
+.proces .visor{position:sticky;top:12svh;height:76svh;border-radius:2px;overflow:hidden;background:#0d0b09}
+.visor img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s,transform 1.6s;transform:scale(1.04)}
+.visor img.actiu{opacity:1;transform:scale(1)}
+.passos{list-style:none;padding:0}
+.passos li{min-height:62svh;display:flex;flex-direction:column;justify-content:center;border-top:1px solid var(--linia);opacity:.38;transition:opacity .5s}
+.passos li.actiu{opacity:1}
+.passos .n{font:400 18px/1 var(--display);color:var(--llauto)}
+.passos h3{margin-top:14px;font:400 clamp(32px,3.2vw,52px)/1.02 var(--display);letter-spacing:-.015em}
+.passos p{margin-top:14px;color:var(--os-2);max-width:36ch}
+
+/* H7 TANCAMENT */
+.tanca{position:relative;min-height:100svh;display:grid;align-items:end;padding:var(--marge);overflow:hidden}
+.tanca video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.45)}
+.tanca .dins{position:relative;max-width:60rem;padding-bottom:6svh}
+.tanca h2{font-size:clamp(48px,7vw,116px);line-height:.94}
+.tanca p{margin-top:20px;color:var(--os);max-width:40ch}
+.peu{display:flex;flex-wrap:wrap;gap:24px 48px;justify-content:space-between;padding:40px var(--marge) 48px;border-top:1px solid var(--linia);font-size:14px;color:var(--os-2)}
+.peu nav{display:flex;gap:20px;flex-wrap:wrap}
+.peu a{text-decoration:none}
+
+@media (max-width:860px){
+  .capcalera nav{display:none}
+  .capcalera .boto{min-height:40px;padding:0 14px}
+  .hero-text,.cap-sec{grid-template-columns:1fr;gap:20px}
+  .marc{clip-path:inset(calc(var(--t,0)*10svh) calc(var(--t,0)*5vw) calc(var(--t,0)*38svh) calc(var(--t,0)*5vw) round calc(var(--t,0)*4px))}
+  .text-2{left:5vw;right:5vw;width:auto;top:auto;bottom:6svh;transform:translateY(calc((1 - var(--g,0))*30px))}
+  .toc .text{top:auto;bottom:5svh;transform:none;right:var(--marge);opacity:1}
+  .toc .fons::after{content:"";position:absolute;left:0;right:0;bottom:0;height:52%;background:linear-gradient(rgba(13,11,9,0),rgba(13,11,9,.94) 45%)}
+  .config-grid,.proces,.prop{grid-template-columns:1fr}
+  .eina{position:static}
+  .prop figure.a{grid-row:auto}
+  .proces .visor{position:sticky;top:64px;height:34svh;z-index:1}
+  .passos li{min-height:48svh}
+  .tira figure,.tira figure:nth-child(even){flex-basis:84vw}
+}
+@media (prefers-reduced-motion:reduce){
+  .escena,.toc{height:auto}
+  .fix{position:relative;height:100svh}
+  .marc{clip-path:none}.marc img,.text-2{display:none}
+  .toc .fix{--m:1;--p:1}
+  .prop img{transition:none}
+  .visor img{transition:none}
+}
+</style>
+</head>
+<body>
+<header class="capcalera" id="capcalera">
+  <a class="marca" href="#">[MARCA]</a>
+  <nav aria-label="Principal"><a href="#proces">Cómo trabajamos</a><a href="#">Restauración</a><a href="#">Preguntas</a><a href="#">ES</a></nav>
+  <a class="boto" href="#configurador">Diseña tu placa</a>
+</header>
+<main>
+  <!-- H1 -->
+  <section class="escena" id="escena" aria-labelledby="titol">
+    <div class="fix">
+      <div class="marc">
+        <video autoplay muted loop playsinline poster="https://cdn.pixabay.com/video/2016/05/12/3152-166336023_medium.jpg" aria-hidden="true"><source src="https://cdn.pixabay.com/video/2016/05/12/3152-166336023_large.mp4" type="video/mp4"></video>
+        <img src="img/fusta.jpg" alt="Placa de sobremesa con la marca de un restaurante, sobre una mesa de madera junto a una copa y un vaso.">
+        <div class="vel"></div>
+      </div>
+      <div class="hero-text">
+        <h1 id="titol">Cada mesa,<br>a un toque<br>de tu reseña.</h1>
+        <div>
+          <p>Placas NFC con la marca de tu grupo. El cliente acerca el móvil y llega a tu ficha de Google, a la carta o a tus redes. Las diseñamos, las instalamos y las probamos en cada local.</p>
+          <div class="accions"><a class="boto" href="#configurador">Diseña tu placa</a><a class="boto fi" href="#toc">Ver cómo funciona</a></div>
+        </div>
+      </div>
+      <div class="text-2">
+        <h2>Con tu marca, en cada mesa.</h2>
+        <p>Una placa de sobremesa que encaja con tu sala, no un adhesivo genérico.</p>
+        <p class="mida">Sobremesa · 75 × 125 mm, base de 50 mm</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- H2 -->
+  <section class="toc" id="toc" aria-labelledby="t-toc">
+    <div class="fix" id="fix-toc">
+      <div class="fons" id="fons-toc"></div>
+      <div class="ona" id="ona"></div>
+      <div class="mobil" id="mobil" aria-hidden="true">
+        <img src="img/mobil.png" alt="">
+        <div class="pantalla" id="pantalla"><div class="pag"><p class="nom">Vellut</p><p class="loc">Taverna · Barcelona</p><div class="estrelles">☆☆☆☆☆</div><div class="caixa">Cuéntanos qué tal ha ido…</div><div class="env">Publicar</div></div></div>
+      </div>
+      <div class="text">
+        <h2 id="t-toc">Acercar el móvil. Nada más.</h2>
+        <p>Sin app, sin buscar el local, sin escribir nada. La placa abre tu ficha de reseñas, la carta o tus redes: lo que elijas para cada local.</p>
+        <p class="fet">Así, dejar una reseña pasa de cinco pasos a dos.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- H3 -->
+  <section class="sec config" id="configurador" aria-labelledby="t-config">
+    <div class="cap-sec">
+      <h2 id="t-config">Mira tus placas antes de pedirlas.</h2>
+      <p>Escribe la web de tu empresa: sacamos tu logo y tu color y te enseñamos la placa en una mesa, en la terraza y en la sala. Luego te mandamos el diseño en PDF.</p>
+    </div>
+    <div class="config-grid">
+      <div class="eina">
+        <form id="form" novalidate>
+          <label for="domini">La web de tu empresa</label>
+          <div class="camp"><input id="domini" type="text" inputmode="url" autocomplete="url" placeholder="tudominio.com" spellcheck="false"><button class="boto" type="submit" id="enviar">Ver mis placas</button></div>
+          <p class="estat" id="estat" role="status" aria-live="polite">En esta versión de muestra ves la placa de una marca de ejemplo. Cambia el destino y el idioma para ver cómo cambia.</p>
+        </form>
+        <div class="opcions">
+          <fieldset><legend>Al acercar el móvil, abre</legend><div class="xips" id="desti">
+            <label><input type="radio" name="d" value="resena" checked><span>Reseñas</span></label>
+            <label><input type="radio" name="d" value="carta"><span>La carta</span></label>
+            <label><input type="radio" name="d" value="insta"><span>Instagram</span></label>
+          </div></fieldset>
+          <fieldset><legend>Idioma de la placa</legend><div class="xips" id="idioma">
+            <label><input type="radio" name="i" value="es" checked><span>Castellano</span></label>
+            <label><input type="radio" name="i" value="ca"><span>Català</span></label>
+            <label><input type="radio" name="i" value="en"><span>English</span></label>
+          </div></fieldset>
+        </div>
+        <a class="boto rep" href="#configurador">Recibir el diseño en PDF</a>
+      </div>
+      <div class="fotos">
+        <figure class="foto gran" data-foto="fusta-b"><figcaption>Mesa</figcaption></figure>
+        <figure class="foto petita" data-foto="terrassa-b"><figcaption>Terraza</figcaption></figure>
+        <figure class="foto petita" data-foto="fosca-b"><figcaption>Sala</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- H4 -->
+  <section class="sec" style="padding-inline:0" aria-labelledby="t-locals">
+    <div class="cap-sec" style="padding-inline:var(--marge)">
+      <h2 id="t-locals">Donde se sienta tu cliente.</h2>
+      <p>En la mesa, en la terraza o en la barra. La misma placa en todos tus locales.</p>
+    </div>
+    <div class="tira" tabindex="0" aria-label="Fotos de la placa en distintos espacios">
+      <figure><img src="img/terrassa.jpg" alt="Placa en una mesa de terraza con mantel blanco, al sol." loading="lazy"><figcaption><b>Terraza</b><span>Sobremesa</span></figcaption></figure>
+      <figure><img src="img/fosca.jpg" alt="Placa en una mesa de madera oscura, detrás de una servilleta." loading="lazy"><figcaption><b>Sala</b><span>Sobremesa</span></figcaption></figure>
+      <figure><img src="img/fusta.jpg" alt="Placa en una mesa de madera junto a una copa." loading="lazy"><figcaption><b>Mesa</b><span>Sobremesa</span></figcaption></figure>
+    </div>
+  </section>
+
+  <!-- H5 -->
+  <section class="sec" aria-labelledby="t-prop">
+    <div class="cap-sec">
+      <h2 id="t-prop">Hecha para durar en una sala de verdad.</h2>
+      <p>Impresa a una cara, con esquinas redondeadas y una base que la sostiene sola. Se limpia con un paño.</p>
+    </div>
+    <div class="prop">
+      <figure class="a"><img src="img/det-perfil.jpg" alt="La placa de perfil: una lámina doblada en L con base de 50 mm." loading="lazy"><figcaption><b>Base de 50 mm</b>Se sostiene sola, sin soporte aparte.</figcaption></figure>
+      <figure><img src="img/det-cantonada.jpg" alt="Detalle de la esquina redondeada de la placa." loading="lazy"><figcaption><b>Esquinas de 3,5 mm</b>Sin cantos que se astillen.</figcaption></figure>
+      <figure><img src="img/det-formats.jpg" alt="Los dos formatos: la placa de sobremesa y la adhesiva cuadrada." loading="lazy"><figcaption><b>Dos formatos</b>Sobremesa 75 × 125 mm · adhesiva 100 × 100 mm</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- H6 -->
+  <section class="sec" id="proces" aria-labelledby="t-proces" style="background:var(--nit-2)">
+    <div class="cap-sec">
+      <h2 id="t-proces">Cómo trabajamos.</h2>
+      <p>Para grupos con muchos locales: una persona de contacto y el mismo proceso en cada uno.</p>
+    </div>
+    <div class="proces">
+      <div class="visor" id="visor" aria-hidden="true">
+        <img src="img/pas-visita.jpg" alt="" class="actiu" loading="lazy">
+        <img src="img/pas-disseny.jpg" alt="" loading="lazy">
+        <img src="img/pas-fabrica.jpg" alt="" loading="lazy">
+        <img src="img/fusta.jpg" alt="" loading="lazy">
+        <img src="img/fosca.jpg" alt="" loading="lazy">
+      </div>
+      <ol class="passos" id="passos">
+        <li class="actiu"><span class="n">1</span><h3>Visitamos tus locales</h3><p>Vemos dónde se sienta la gente y qué conviene en cada sitio: sobremesa, adhesiva o las dos.</p></li>
+        <li><span class="n">2</span><h3>Diseñamos con tu marca</h3><p>Con tu logo, tu color y tus textos. Tú lo apruebas antes de fabricar nada.</p></li>
+        <li><span class="n">3</span><h3>Fabricamos</h3><p>Impresas y con el chip programado al destino de cada local.</p></li>
+        <li><span class="n">4</span><h3>Las instalamos</h3><p>Vamos a cada local y las dejamos puestas en las mesas, la barra o la entrada.</p></li>
+        <li><span class="n">5</span><h3>Probamos cada una</h3><p>Antes de irnos, acercamos un móvil a cada placa y comprobamos que abre lo que toca.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- H7 -->
+  <section class="tanca" aria-labelledby="t-tanca">
+    <video autoplay muted loop playsinline poster="https://cdn.pixabay.com/video/2024/07/28/223624_medium.jpg" aria-hidden="true"><source src="https://cdn.pixabay.com/video/2024/07/28/223624_large.mp4" type="video/mp4"></video>
+    <div class="dins">
+      <h2 id="t-tanca">Tu marca, en cada mesa de cada local.</h2>
+      <p>Diseña tu placa en un minuto o escríbenos y vamos a verte.</p>
+      <div class="accions"><a class="boto" href="#configurador">Diseña tu placa</a><a class="boto fi" href="#">Escríbenos</a></div>
+    </div>
+  </section>
+</main>
+<footer class="peu">
+  <span>[MARCA] · Barcelona</span>
+  <nav aria-label="Legal"><a href="#">Aviso legal</a><a href="#">Privacidad</a><a href="#">Cookies</a><a href="#">ES · CA · EN</a></nav>
+  <span>Prototipo. Textos de muestra; «Vellut» es una marca inventada. Fotos: Unsplash. Vídeos: Pixabay. La placa y el móvil son renders.</span>
+</footer>
+<script>
+const reduit = matchMedia('(prefers-reduced-motion: reduce)');
+const tram = (p, a, b) => Math.min(1, Math.max(0, (p - a) / (b - a)));
+const suau = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const progres = el => { const r = el.getBoundingClientRect(); return Math.min(1, Math.max(0, -r.top / (r.height - innerHeight))); };
+
+// --- homografia (rectangle → quadrilàter) per posar un disseny o una pantalla en perspectiva
+const adj = m => [m[4]*m[8]-m[5]*m[7], m[2]*m[7]-m[1]*m[8], m[1]*m[5]-m[2]*m[4], m[5]*m[6]-m[3]*m[8], m[0]*m[8]-m[2]*m[6], m[2]*m[3]-m[0]*m[5], m[3]*m[7]-m[4]*m[6], m[1]*m[6]-m[0]*m[7], m[0]*m[4]-m[1]*m[3]];
+const mm = (a, b) => { const c = []; for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) { let s = 0; for (let k = 0; k < 3; k++) s += a[3*i+k] * b[3*k+j]; c.push(s); } return c; };
+const mv = (m, v) => [m[0]*v[0]+m[1]*v[1]+m[2]*v[2], m[3]*v[0]+m[4]*v[1]+m[5]*v[2], m[6]*v[0]+m[7]*v[1]+m[8]*v[2]];
+const base = p => { const m = [p[0][0], p[1][0], p[2][0], p[0][1], p[1][1], p[2][1], 1, 1, 1]; const v = mv(adj(m), [p[3][0], p[3][1], 1]); return mm(m, [v[0],0,0, 0,v[1],0, 0,0,v[2]]); };
+function matriu(w, h, q) { const t = mm(base(q), adj(base([[0,0],[w,0],[0,h],[w,h]]))); for (let i = 0; i < 9; i++) t[i] /= t[8]; return `matrix3d(${t[0]},${t[3]},0,${t[6]},${t[1]},${t[4]},0,${t[7]},0,0,1,0,${t[2]},${t[5]},0,${t[8]})`; }
+// col·loca una foto «cover» centrada en un punt (fx, fy en 0–1) dins d'una caixa
+function cover(caixa, [iw, ih], fx, fy, zoom = 1) {
+  const tw = caixa.clientWidth, th = caixa.clientHeight, k = Math.max(tw / iw, th / ih) * zoom, lw = iw * k, lh = ih * k;
+  return { lw, lh, left: Math.min(0, Math.max(tw - lw, tw / 2 - fx * lw)), top: Math.min(0, Math.max(th - lh, th / 2 - fy * lh)) };
+}
+
+// ===== H1
+const escena = document.getElementById('escena'), fixH = escena.querySelector('.fix'), cap = document.getElementById('capcalera');
+
+// ===== H2 el toc
+const FOTOS = {};
+const fixT = document.getElementById('fix-toc'), fonsT = document.getElementById('fons-toc'), ona = document.getElementById('ona'), mobil = document.getElementById('mobil'), pant = document.getElementById('pantalla');
+let PANT = null;
+function encaixaToc() {
+  const d = FOTOS['fusta-hd']; if (!d) return;
+  const fx = (d.cara.ae[0] + d.cara.bd[0]) / 200, fy = (d.cara.ae[1] + d.cara.bd[1]) / 200;
+  const esMob = innerWidth < 860;
+  const c = cover(fixT, d.mida, esMob ? fx + .03 : fx - .12, esMob ? fy + .2 : fy, esMob ? 2.4 : 1.55);
+  let lam = fonsT.querySelector('.lamina');
+  if (!lam) { lam = document.createElement('div'); lam.className = 'lamina'; lam.innerHTML = '<img src="img/fusta-hd.jpg" alt="">'; fonsT.append(lam); }
+  Object.assign(lam.style, { width: c.lw + 'px', height: c.lh + 'px', left: c.left + 'px', top: c.top + 'px' });
+  // punt del xip: 81,5 mm de 125 des de dalt, al mig de la cara
+  const P = n => [d.cara[n][0] / 100 * c.lw + c.left, d.cara[n][1] / 100 * c.lh + c.top];
+  const ae = P('ae'), ad = P('ad'), be = P('be'), bd = P('bd'), v = 81.5 / 125;
+  const dalt = [(ae[0] + ad[0]) / 2, (ae[1] + ad[1]) / 2], baix = [(be[0] + bd[0]) / 2, (be[1] + bd[1]) / 2];
+  const xip = [dalt[0] + (baix[0] - dalt[0]) * v, dalt[1] + (baix[1] - dalt[1]) * v];
+  Object.assign(ona.style, { left: xip[0] + 'px', top: xip[1] + 'px' });
+  const altPlaca = baix[1] - dalt[1];
+  const mw = Math.min(esMob ? innerWidth * .42 : 9e9, altPlaca * 1.25 * (PANT ? PANT.mida[0] / PANT.mida[1] : .77) * 1.05);
+  mobil.style.setProperty('--mw', mw + 'px');
+  // el mòbil acaba davant de la placa, desplaçat a la dreta i avall
+  mobil.style.left = (esMob ? Math.min(xip[0] + altPlaca * .1, innerWidth - mw - 12) : xip[0] + altPlaca * .26) + 'px';
+  mobil.style.top = (xip[1] - mw * (PANT ? PANT.mida[1] / PANT.mida[0] : 1.3) * .42) + 'px';
+  if (PANT) {
+    const q = ['ae', 'ad', 'be', 'bd'].map(n => [PANT.pantalla[n][0] / 100 * mw, PANT.pantalla[n][1] / 100 * mw * PANT.mida[1] / PANT.mida[0]]);
+    pant.style.transform = matriu(360, 740, q);
+  }
+}
+
+// ===== H3 configurador
+const marca = { nom: 'VELLUT', logo: null, color: '#4A1620' };
+const TEXTOS = {
+  resena: { es: ['¿Qué tal ha ido?', 'Cuéntanoslo en una reseña'], ca: ['Com ha anat?', 'Explica-ho en una ressenya'], en: ['How was it?', 'Tell us in a review'] },
+  carta:  { es: ['Nuestra carta', 'Ábrela en tu móvil'], ca: ['La nostra carta', 'Obre-la al mòbil'], en: ['Our menu', 'Open it on your phone'] },
+  insta:  { es: ['Síguenos', 'En Instagram'], ca: ['Segueix-nos', 'A Instagram'], en: ['Follow us', 'On Instagram'] },
+};
+const PEU = { es: 'Acerca el móvil', ca: 'Apropa el mòbil', en: 'Tap your phone' };
+const lum = hex => { const c = hex.match(/\w\w/g).map(x => parseInt(x, 16) / 255).map(v => v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4); return .2126*c[0] + .7152*c[1] + .0722*c[2]; };
+const sobre = hex => lum(hex) > .4 ? '#111111' : '#FFFFFF';
+const triat = n => document.querySelector(`input[name=${n}]:checked`).value;
+function svgCara() {
+  const c = marca.color, t = sobre(c), [l1, l2] = TEXTOS[triat('d')][triat('i')];
+  const logo = marca.logo ? `<image href="${marca.logo}" x="12" y="14" width="51" height="34" preserveAspectRatio="xMidYMid meet"/>`
+    : `<text x="37.5" y="36" font-family="Georgia,serif" font-size="9" letter-spacing="1.4" text-anchor="middle" fill="${c}">${marca.nom}</text>`;
+  return `<svg viewBox="0 0 75 125" xmlns="http://www.w3.org/2000/svg"><rect width="75" height="125" fill="#fff"/>${logo}<rect y="62" width="75" height="63" fill="${c}"/>
+    <text x="37.5" y="78" font-family="Geist,sans-serif" font-weight="600" font-size="5.6" text-anchor="middle" fill="${t}">${l1}</text>
+    <text x="37.5" y="85" font-family="Geist,sans-serif" font-size="3.5" text-anchor="middle" fill="${t}" opacity=".85">${l2}</text>
+    <g transform="translate(37.5 102)" fill="none" stroke="${t}" stroke-linecap="round" stroke-width=".9"><path d="M-5 -2a3 3 0 0 1 0 4"/><path d="M-1.6 -4.6a6.5 6.5 0 0 1 0 9.2"/><path d="M1.8 -7.2a10 10 0 0 1 0 14.4"/></g>
+    <text x="37.5" y="117" font-family="Geist,sans-serif" font-size="3.2" text-anchor="middle" fill="${t}" opacity=".85">${PEU[triat('i')]}</text></svg>`;
+}
+function encaixa(fig) {
+  const d = FOTOS[fig.dataset.foto]; if (!d) return;
+  const fx = (d.cara.ae[0] + d.cara.bd[0]) / 200, fy = (d.cara.ae[1] + d.cara.bd[1]) / 200;
+  const c = cover(fig, d.mida, fx, fy);
+  let lam = fig.querySelector('.lamina');
+  if (!lam) { lam = document.createElement('div'); lam.className = 'lamina'; lam.innerHTML = `<img src="img/${fig.dataset.foto}.jpg" alt=""><div class="disseny"></div>`; fig.prepend(lam); }
+  Object.assign(lam.style, { width: c.lw + 'px', height: c.lh + 'px', left: c.left + 'px', top: c.top + 'px' });
+  const q = ['ae', 'ad', 'be', 'bd'].map(n => [d.cara[n][0] / 100 * c.lw, d.cara[n][1] / 100 * c.lh]);
+  const dis = lam.querySelector('.disseny'); dis.style.transform = matriu(75, 125, q); dis.innerHTML = svgCara();
+}
+const figures = [...document.querySelectorAll('.foto[data-foto]')];
+const totes = () => figures.forEach(encaixa);
+document.querySelectorAll('#desti input,#idioma input').forEach(i => i.addEventListener('change', totes));
+const form = document.getElementById('form'), inp = document.getElementById('domini'), btn = document.getElementById('enviar'), estat = document.getElementById('estat');
+let ocupat = false;
+form.addEventListener('submit', async e => {
+  e.preventDefault(); if (ocupat) return;
+  if (!/^(localhost|127.0.0.1)$/.test(location.hostname)) { estat.textContent = 'En esta versión de muestra el buscador de logos no está activo. En la web final sacará tu logo y tu color de tu web.'; return; }
+  const domini = inp.value.trim().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  if (!/^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(domini)) { estat.textContent = 'Escribe la web de tu empresa, por ejemplo tudominio.com.'; inp.focus(); return; }
+  ocupat = true; btn.setAttribute('aria-busy', 'true'); estat.textContent = 'Buscando tu logo en ' + domini + '…';
+  const ctl = new AbortController(), temps = setTimeout(() => ctl.abort(), 20000);
+  try {
+    const r = await fetch('/api/extreu', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ domini }), signal: ctl.signal });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(r.status === 429 ? 'Has probado muchas webs seguidas. Espera un minuto.' : 'No hemos encontrado el logo en esta web. Prueba con otra dirección.');
+    // el logo ve d'una web de tercers: només s'accepta una imatge en base64 (sense cometes ni marques possibles)
+    const dades = j.candidats && j.candidats[0] && j.candidats[0].dades;
+    if (typeof dades !== 'string' || !/^data:image\/(png|jpeg|webp|gif|svg\+xml|x-icon|vnd\.microsoft\.icon);base64,[A-Za-z0-9+\/=]+$/.test(dades)) throw new Error('No hemos encontrado el logo en esta web. Prueba con otra dirección.');
+    marca.logo = dades;
+    const hex = (j.color && (j.color.hex || j.color)) || marca.color; if (/^#[0-9a-f]{6}$/i.test(hex)) marca.color = hex;
+    totes(); estat.textContent = 'Así quedan tus placas. El diseño final lo ajustamos contigo.';
+  } catch (err) {
+    estat.textContent = err.name === 'AbortError' ? 'La web tarda demasiado en responder. Prueba otra vez.' : (/^(No|Has)/.test(err.message) ? err.message : 'No hay conexión. Revisa la red y prueba otra vez.');
+  } finally { clearTimeout(temps); ocupat = false; btn.removeAttribute('aria-busy'); }
+});
+
+// ===== H5 revelat (un sol cop)
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vist'); io.unobserve(e.target); } }), { threshold: .25 });
+document.querySelectorAll('.prop figure').forEach(f => io.observe(f));
+
+// ===== H6 passos
+const passos = [...document.querySelectorAll('#passos li')], visor = [...document.querySelectorAll('#visor img')];
+const ioP = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { const i = passos.indexOf(e.target); passos.forEach((p, k) => p.classList.toggle('actiu', k === i)); visor.forEach((v, k) => v.classList.toggle('actiu', k === i)); } }), { rootMargin: '-45% 0px -45% 0px' });
+passos.forEach(p => ioP.observe(p));
+
+// ===== bucle d'scroll
+let pendent = false;
+function pinta() {
+  pendent = false;
+  cap.classList.toggle('opac', scrollY > innerHeight * .5);
+  if (reduit.matches) return;
+  const p = progres(escena);
+  fixH.style.setProperty('--t', suau(tram(p, .08, .5)).toFixed(4));
+  fixH.style.setProperty('--f', suau(tram(p, .42, .68)).toFixed(4));
+  fixH.style.setProperty('--g', suau(tram(p, .6, .82)).toFixed(4));
+  const q = progres(document.getElementById('toc'));
+  fixT.style.setProperty('--m', suau(tram(q, .05, .5)).toFixed(4));   // el mòbil s'acosta
+  fixT.style.setProperty('--o', tram(q, .5, .72).toFixed(4));         // una ona, una vegada
+  fixT.style.setProperty('--p', suau(tram(q, .58, .75)).toFixed(4));  // s'obre la pàgina
+}
+addEventListener('scroll', () => { if (!pendent) { pendent = true; requestAnimationFrame(pinta); } }, { passive: true });
+addEventListener('resize', () => { encaixaToc(); totes(); pinta(); });
+Promise.all([
+  ...['fusta-hd', 'fusta-b', 'terrassa-b', 'fosca-b'].map(n => fetch(`img/${n}.json`).then(r => r.json()).then(j => { FOTOS[n] = { mida: j.foto, cara: j.cara }; }).catch(() => {})),
+  fetch('img/mobil-pantalla.json').then(r => r.json()).then(j => { PANT = j; }).catch(() => {}),
+]).finally(() => { encaixaToc(); totes(); pinta(); });
+pinta();
+</script>
+</body>
+</html>
